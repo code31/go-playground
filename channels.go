@@ -62,7 +62,7 @@ func main() {
 
 
 	// this deadlocks at the end because there are no more messages, but rather than waiting on the handlers to return,
-	// we can demonstrate a stream of messages in the console.
+	// and closing messages before reading, we can demonstrate a stream of messages in the console.
 	for m := range s.messages {
 		fmt.Println(m)
 	}

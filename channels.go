@@ -33,10 +33,12 @@ func (s *semaphore) done() {
 func worker(handlerId int, workerId int, s *semaphore, wg *sync.WaitGroup) {
 	defer s.done()
 	defer wg.Done()
+	defer mut.Unlock()
+
 	mut.Lock()
 	counter++
-	mut.Unlock()
-	time.Sleep(time.Second * 10)
+	time.Sleep(time.Second * 1)
+	s.messages <- fmt.Sprintf("Total Requests: %d", counter)
 	s.messages <- fmt.Sprintf("executing worker: handlerId: %d, workerId: %d, channelLength: %d\n", handlerId, workerId, len(s.c))
 }
 
@@ -58,10 +60,11 @@ func main() {
 		go handler(h, s)
 	}
 
+
+	// this deadlocks at the end because there are no more messages, but rather than waiting on the handlers to return,
+	// we can demonstrate a stream of messages in the console.
 	for m := range s.messages {
 		fmt.Println(m)
 	}
-
-	fmt.Println("Total Requests:", counter)
 
 }

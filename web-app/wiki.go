@@ -1,14 +1,18 @@
 package main
 
 import (
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"html/template"
 	"regexp"
+	"embed"
 )
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+//go:embed html/*
+var fs embed.FS
+
+var templates = template.Must(template.ParseFS(fs, "html/edit.html", "html/view.html"))
 
 // prevent arbitrary path read/writes
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
